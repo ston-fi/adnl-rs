@@ -7,9 +7,9 @@ async fn main() -> Result<(), Box<dyn Error>> {
         .nth(1)
         .unwrap_or_else(|| "127.0.0.1:8080".to_string());
 
-    let public_key_hex = env::args()
-        .nth(2)
-        .unwrap_or_else(|| "b7d8e88f4033eff806e2f5dff3c785be7dd038c923146e2d9fe80e4fe3cb8805".to_string());
+    let public_key_hex = env::args().nth(2).unwrap_or_else(|| {
+        "b7d8e88f4033eff806e2f5dff3c785be7dd038c923146e2d9fe80e4fe3cb8805".to_string()
+    });
 
     let remote_public = AdnlRawPublicKey::try_from(&*hex::decode(public_key_hex)?)?;
 

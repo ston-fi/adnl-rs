@@ -1,4 +1,6 @@
-use crate::{AdnlBuilder, AdnlError, AdnlHandshake, AdnlPrivateKey, AdnlPublicKey, AdnlReceiver, AdnlSender};
+use crate::{
+    AdnlBuilder, AdnlError, AdnlHandshake, AdnlPrivateKey, AdnlPublicKey, AdnlReceiver, AdnlSender,
+};
 use tokio::io::{empty, AsyncReadExt, AsyncWriteExt};
 use tokio::net::{TcpStream, ToSocketAddrs};
 use x25519_dalek::StaticSecret;
@@ -53,20 +55,24 @@ impl<T: AsyncReadExt + AsyncWriteExt + Unpin> AdnlPeer<T> {
             transport,
         };
         let mut empty = empty();
-        client
-            .receive_with_buffer::<_, 0>(&mut empty)
-            .await?;
+        client.receive_with_buffer::<_, 0>(&mut empty).await?;
         Ok(client)
     }
 
-    /// Act as a server: receive handshake over transport. 
+    /// Act as a server: receive handshake over transport.
     /// Verifies following things:
     /// 1) target ADNL address matches associated with provided private key
     /// 2) integrity of handshake is not compromised
-    pub async fn handle_handshake<S: AdnlPrivateKey>(mut transport: T, private_key: &S) -> Result<Self, AdnlError> {
+    pub async fn handle_handshake<S: AdnlPrivateKey>(
+        mut transport: T,
+        private_key: &S,
+    ) -> Result<Self, AdnlError> {
         // receive handshake
         let mut packet = [0u8; 256];
-        transport.read_exact(&mut packet).await.map_err(AdnlError::ReadError)?;
+        transport
+            .read_exact(&mut packet)
+            .await
+            .map_err(AdnlError::ReadError)?;
         let handshake = AdnlHandshake::decrypt_from_raw(&packet, private_key)?;
 
         let mut server = Self {

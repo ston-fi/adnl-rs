@@ -4,7 +4,9 @@ use std::{error::Error, net::SocketAddrV4};
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
     // decode liteserver public key
-    let remote_public = AdnlRawPublicKey::try_from(&*base64::decode("JhXt7H1dZTgxQTIyGiYV4f9VUARuDxFl/1kVBjLSMB8=")?)?;
+    let remote_public = AdnlRawPublicKey::try_from(&*base64::decode(
+        "JhXt7H1dZTgxQTIyGiYV4f9VUARuDxFl/1kVBjLSMB8=",
+    )?)?;
 
     let ls_ip = "65.21.74.140";
     let ls_port = 46427;

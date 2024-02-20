@@ -55,7 +55,12 @@ fn test_handshake(
     let local_public = AdnlRawPublicKey::try_from(&*local_public).unwrap();
     let ecdh_raw: [u8; 32] = ecdh.try_into().unwrap();
     let ecdh = AdnlSecret::from(ecdh_raw);
-    let handshake = AdnlHandshake::new(remote_public.address(), local_public.clone(), ecdh.clone(), aes_params);
+    let handshake = AdnlHandshake::new(
+        remote_public.address(),
+        local_public.clone(),
+        ecdh.clone(),
+        aes_params,
+    );
     assert_eq!(
         handshake.to_bytes(),
         expected_handshake.as_slice(),
@@ -65,7 +70,7 @@ fn test_handshake(
     // test deserializing
     struct DummyKey {
         ecdh: AdnlSecret,
-        public: AdnlRawPublicKey
+        public: AdnlRawPublicKey,
     }
 
     impl AdnlPrivateKey for DummyKey {
@@ -80,12 +85,33 @@ fn test_handshake(
         }
     }
 
-    let key = DummyKey { ecdh: ecdh, public: remote_public.clone() };
-    let handshake2 = AdnlHandshake::decrypt_from_raw(expected_handshake.as_slice().try_into().unwrap(), &key).expect("invalid handshake");
-    assert_eq!(handshake2.aes_params().to_bytes(), aes_params_raw, "aes_params mismatch");
-    assert_eq!(handshake2.receiver(), &remote_public.address(), "receiver mismatch");
-    assert_eq!(handshake2.sender().to_bytes(), local_public.to_bytes(), "sender mismatch");
-    assert_eq!(&handshake2.to_bytes(), expected_handshake.as_slice(), "reencryption failed");
+    let key = DummyKey {
+        ecdh: ecdh,
+        public: remote_public.clone(),
+    };
+    let handshake2 =
+        AdnlHandshake::decrypt_from_raw(expected_handshake.as_slice().try_into().unwrap(), &key)
+            .expect("invalid handshake");
+    assert_eq!(
+        handshake2.aes_params().to_bytes(),
+        aes_params_raw,
+        "aes_params mismatch"
+    );
+    assert_eq!(
+        handshake2.receiver(),
+        &remote_public.address(),
+        "receiver mismatch"
+    );
+    assert_eq!(
+        handshake2.sender().to_bytes(),
+        local_public.to_bytes(),
+        "sender mismatch"
+    );
+    assert_eq!(
+        &handshake2.to_bytes(),
+        expected_handshake.as_slice(),
+        "reencryption failed"
+    );
 }
 
 #[tokio::test]

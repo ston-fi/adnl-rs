@@ -22,7 +22,7 @@ impl AdnlReceiver {
     /// will be sent to `consumer`, which usually can be just `Vec`. Note that
     /// data can be processed before this function will return, but in case of
     /// [`AdnlError::IntegrityError`] you must assume that the data was tampered.
-    /// 
+    ///
     /// Returns received packet length.
     ///
     /// You can adjust `BUFFER` according to your memory requirements.

@@ -1,6 +1,8 @@
 use crate::helper_types::AdnlRawPublicKey;
 use crate::primitives::AdnlAes;
-use crate::{AdnlAddress, AdnlAesParams, AdnlPeer, AdnlError, AdnlPrivateKey, AdnlPublicKey, AdnlSecret};
+use crate::{
+    AdnlAddress, AdnlAesParams, AdnlError, AdnlPeer, AdnlPrivateKey, AdnlPublicKey, AdnlSecret,
+};
 use aes::cipher::KeyIvInit;
 use ctr::cipher::StreamCipher;
 use sha2::{Digest, Sha256};
@@ -90,14 +92,17 @@ impl<P: AdnlPublicKey> AdnlHandshake<P> {
 
 impl AdnlHandshake<AdnlRawPublicKey> {
     /// Deserialize and decrypt handshake
-    pub fn decrypt_from_raw<S: AdnlPrivateKey>(packet: &[u8; 256], key: &S) -> Result<Self, AdnlError> {
+    pub fn decrypt_from_raw<S: AdnlPrivateKey>(
+        packet: &[u8; 256],
+        key: &S,
+    ) -> Result<Self, AdnlError> {
         let receiver = packet[..32].try_into().unwrap();
         let sender = packet[32..64].try_into().unwrap();
         let hash: [u8; 32] = packet[64..96].try_into().unwrap();
         let mut raw_params: [u8; 160] = packet[96..256].try_into().unwrap();
 
         if key.public().address() != receiver {
-            return Err(AdnlError::UnknownAddr(receiver))
+            return Err(AdnlError::UnknownAddr(receiver));
         }
 
         let secret = key.key_agreement(&sender);
@@ -105,7 +110,7 @@ impl AdnlHandshake<AdnlRawPublicKey> {
         aes.apply_keystream(&mut raw_params);
 
         if hash != Self::sha256(raw_params) {
-            return Err(AdnlError::IntegrityError)
+            return Err(AdnlError::IntegrityError);
         }
 
         Ok(Self {
