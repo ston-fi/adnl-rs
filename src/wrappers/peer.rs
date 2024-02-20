@@ -18,7 +18,7 @@ impl AdnlPeer<TcpStream> {
         ls_addr: A,
     ) -> Result<AdnlPeer<TcpStream>, AdnlError> {
         // generate private key
-        let local_secret = StaticSecret::new(rand::rngs::OsRng);
+        let local_secret = StaticSecret::random_from_rng(rand::rngs::OsRng);
 
         // use TcpStream as transport for our ADNL connection
         let transport = TcpStream::connect(ls_addr).await?;
