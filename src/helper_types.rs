@@ -10,11 +10,11 @@ pub trait AdnlPublicKey {
     fn address(&self) -> AdnlAddress {
         let mut hasher = Sha256::new();
         hasher.update([0xc6, 0xb4, 0x13, 0x48]); // type id - always ed25519
-        hasher.update(self.to_bytes());
+        hasher.update(self.key_to_bytes());
         AdnlAddress(hasher.finalize().into())
     }
 
-    fn to_bytes(&self) -> [u8; 32];
+    fn key_to_bytes(&self) -> [u8; 32];
 }
 
 /// Public key can be provided using raw slice
@@ -22,7 +22,7 @@ pub trait AdnlPublicKey {
 pub struct AdnlRawPublicKey([u8; 32]);
 
 impl AdnlPublicKey for AdnlRawPublicKey {
-    fn to_bytes(&self) -> [u8; 32] {
+    fn key_to_bytes(&self) -> [u8; 32] {
         self.0
     }
 }

@@ -28,10 +28,12 @@ async fn main() -> Result<(), Box<dyn Error>> {
     let listener = TcpListener::bind(&addr).await?;
     println!("Listening on: {}", addr);
 
+    //приватный 000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f
+    // публичный 8f40c5adb68f25624ae5b214ea767a6ec94d829d3d7b5e1ad1ba6f3e2138285f
     // ADNL: print public key and adnl address associated with given private key
     println!(
         "Public key is: {}",
-        hex::encode(private_key.public().as_bytes())
+        hex::encode(private_key.public().key_to_bytes())
     );
     println!(
         "Address is: {}",

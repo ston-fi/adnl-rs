@@ -2,6 +2,8 @@ extern crate alloc;
 
 use super::*;
 use alloc::vec::Vec;
+use curve25519_dalek::edwards::CompressedEdwardsY;
+use x25519_dalek::StaticSecret;
 
 #[test]
 fn test_handshake_1() {
@@ -103,8 +105,8 @@ fn test_handshake(
         "receiver mismatch"
     );
     assert_eq!(
-        handshake2.sender().to_bytes(),
-        local_public.to_bytes(),
+        handshake2.sender().key_to_bytes(),
+        local_public.key_to_bytes(),
         "sender mismatch"
     );
     assert_eq!(

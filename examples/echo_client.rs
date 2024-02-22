@@ -1,5 +1,6 @@
 use adnl::{AdnlPeer, AdnlRawPublicKey};
 use std::{env, error::Error};
+use x25519_dalek::PublicKey;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
@@ -14,14 +15,14 @@ async fn main() -> Result<(), Box<dyn Error>> {
     let remote_public = AdnlRawPublicKey::try_from(&*hex::decode(public_key_hex)?)?;
 
     // act as a client: connect to ADNL server and perform handshake
-    let mut client = AdnlPeer::connect(&remote_public, addr).await?;
+    let mut client = AdnlPeer::connect(&remote_public, addr).await.unwrap();
 
     // send over ADNL
-    client.send(&mut "hello".as_bytes().to_vec()).await?;
+    client.send(&mut "hello".as_bytes().to_vec()).await.unwrap();
 
     // receive result into vector
     let mut result = Vec::<u8>::new();
-    client.receive(&mut result).await?;
+    client.receive(&mut result).await.unwrap();
 
     println!("received: {}", String::from_utf8(result).unwrap());
     Ok(())

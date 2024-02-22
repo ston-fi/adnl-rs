@@ -5,6 +5,7 @@ use crate::{
 };
 use aes::cipher::KeyIvInit;
 use ctr::cipher::StreamCipher;
+use curve25519_dalek::edwards::CompressedEdwardsY;
 use sha2::{Digest, Sha256};
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
 
@@ -57,7 +58,7 @@ impl<P: AdnlPublicKey> AdnlHandshake<P> {
 
         let mut packet = [0u8; 256];
         packet[..32].copy_from_slice(self.receiver.as_bytes());
-        packet[32..64].copy_from_slice(&self.sender.to_bytes());
+        packet[32..64].copy_from_slice(&self.sender.key_to_bytes());
         packet[64..96].copy_from_slice(&hash);
         packet[96..256].copy_from_slice(&raw_params);
         packet
